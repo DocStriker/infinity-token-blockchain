@@ -1,0 +1,31 @@
+{
+  "name": "infinity-token-blockchain",
+  "version": "1.0.0",
+  "description": "infinity token and smart contracts in ethereum blockchain",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DocStriker/infinity-token-blockchain.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/DocStriker/infinity-token-blockchain/issues"
+  },
+  "homepage": "https://github.com/DocStriker/infinity-token-blockchain#readme",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@types/node": "^22.19.5",
+    "hardhat": "^2.28.3",
+    "typescript": "~5.8.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0",
+    "dotenv": "^17.2.3"
+  }
+}

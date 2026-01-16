@@ -1,5 +1,6 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
+import hre from "hardhat";
+const { ethers } = hre;
 
 describe("InfinityToken", function () {
   let InfinityToken;
@@ -8,13 +9,11 @@ describe("InfinityToken", function () {
   let addr1;
   let addr2;
 
-  const INITIAL_SUPPLY = ethers.parseEther("1000000"); // 1 milhão
-
   beforeEach(async function () {
     [owner, addr1, addr2] = await ethers.getSigners();
 
     InfinityToken = await ethers.getContractFactory("InfinityToken");
-    token = await InfinityToken.deploy(INITIAL_SUPPLY);
+    token = await InfinityToken.deploy();
     await token.waitForDeployment();
   });
 
@@ -60,6 +59,61 @@ describe("InfinityToken", function () {
         token,
         "ERC20InsufficientBalance"
       );
+    });
+  });
+
+  describe("Pause / Unpause", function () {
+    it("Owner poder pausar o contrato", async function () {
+      await token.pause();
+      expect(await token.paused()).to.equal(true);
+    });
+
+    it("Owner pode despausar o contrato", async function () {
+      await token.pause();
+      await token.unpause();
+      expect(await token.paused()).to.equal(false);
+    });
+
+    it("Não-owner NÃO pode pausar", async function () {
+      await expect(
+        token.connect(addr1).pause()
+      ).to.be.revertedWithCustomError(
+        token, "OwnableUnauthorizedAccount"
+      );
+    });
+
+    it("Não-owner NÃO pode despausar", async function () {
+      await token.pause();
+
+      await expect(
+        token.connect(addr1).unpause()
+      ).to.be.revertedWithCustomError(
+        token, "OwnableUnauthorizedAccount"
+      );
+    });
+  });
+
+  describe("whenNotPaused (_update)", function () {
+    it("Deve bloquear transferências quando pausado", async function () {
+      await token.pause();
+
+      await expect(
+        token.transfer(addr1.address, 1n)
+      ).to.be.revertedWithCustomError(
+        token,
+        "EnforcedPause"
+      );
+    });
+
+    it("Deve permitir transferências após unpause", async function () {
+      await token.pause();
+      await token.unpause();
+
+      await expect(
+        token.transfer(addr1.address, 1n)
+      )
+        .to.emit(token, "Transfer")
+        .withArgs(owner.address, addr1.address, 1n);
     });
   });
 
